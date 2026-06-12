@@ -148,6 +148,28 @@
   .tabs button{padding:13px;font-size:.95rem}
   .savebtn{padding:16px;font-size:1.1rem}
   .prm{font-size:1.3rem;padding:0 6px}
+  .predpanel{background:linear-gradient(160deg,#0f7a86,#0a5860);border-radius:13px;padding:14px 14px 12px;margin-top:16px;color:#fff}
+  .whitepanel{background:#fff;border-radius:13px;padding:14px 12px 10px;margin-top:13px}
+  .predbar{position:relative;height:70px;margin:2px 4px}
+  .pbtrack{position:absolute;left:0;right:0;top:33px;height:12px;border-radius:6px;background:#e7eef0;overflow:hidden}
+  .pblow{position:absolute;left:0;top:0;bottom:0;width:6.67%;background:#f1c4c0}
+  .pbband{position:absolute;left:20%;width:26.67%;top:30px;height:18px;border-radius:6px;background:#3aa971;box-shadow:0 3px 8px rgba(17,122,78,.35);display:flex;align-items:center;justify-content:center}
+  .pbband b{color:#fff;font-size:.66rem;font-weight:800}
+  .pbline{position:absolute;top:38px;height:0;border-top:2px dashed #9fb3b8;display:none}
+  .pin{position:absolute;top:27px}
+  .pin .dot{width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.28);transform:translateX(-50%)}
+  .pin.now .dot{background:#2f8fd0}
+  .pin .pill{position:absolute;left:0;transform:translateX(-50%);font-size:.72rem;font-weight:800;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .pin.now .pill{top:26px;color:#2f8fd0}
+  .pin.pred .pill{top:-28px}
+  .whitepanel .predict{background:#f3f7f8;color:var(--ink);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:.9rem;font-weight:700}
+  .whitepanel .predict small{font-weight:400;color:var(--soft)}
+  .whitepanel .brk{color:var(--ink);margin-top:8px}
+  .dosebox{display:flex;align-items:center;gap:8px;background:var(--teal-s);border:1px solid #cfe6e7;border-radius:12px;padding:8px 10px;margin-bottom:12px}
+  .dosebox .dlbl{font-size:.85rem;font-weight:700;color:var(--meal-d);flex:1}
+  .dstp{width:42px;height:42px;flex:0 0 auto;border:0;background:var(--meal);color:#fff;font-size:1.5rem;font-weight:800;border-radius:10px;cursor:pointer;line-height:1}
+  .dstp:active{background:var(--meal-d)}
+  .damt{flex:0 0 auto;min-width:66px;border:1px solid #cfe6e7;background:#fff;color:var(--meal-d);font-family:inherit;font-weight:800;font-size:1rem;padding:9px 8px;border-radius:10px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -160,51 +182,18 @@
 
   <!-- ===== CALC ===== -->
   <div class="view on" id="view-calc">
-    <div class="mini"><span class="c">碳水 <b id="mCarb">0</b>g</span><span class="c">針 <b id="mDose">0</b>度</span><span class="d">預計 <span id="mPred">–</span></span></div>
-
-    <!-- HERO -->
-    <div class="card hero">
-      <div class="mealseg" id="mealSeg"></div>
-      <div class="hline"><span id="hMeal">早餐</span> → 打 <span class="hd" id="hDose">3</span>度針</div>
-      <div class="hsub">食咗 <span class="hc" id="hCarb">0</span>g 碳水 · 目標 2 鐘後 6–10 度</div>
-
-      <div class="strip" id="strip">
-        <div class="striptrack"></div>
-        <div class="band" id="band"></div>
-        <div class="bandlbl" id="bandlbl">目標 6–10</div>
-        <div class="mk" id="mkNow"><div class="dot" style="background:#7fd0ff"></div><div class="ml">而家</div><div class="mv" id="mvNow"></div></div>
-        <div class="mk" id="mkPred"><div class="dot" id="dotPred"></div><div class="ml">2hr後</div><div class="mv" id="mvPred"></div></div>
-        <div class="sclbl" id="sc3" style="left:0">3</div>
-        <div class="sclbl" id="sc18" style="left:100%">18</div>
-      </div>
-
-      <div class="predict" id="predict"></div>
-
-      <div class="brk" id="refBox"></div>
-      <button class="savebtn" id="saveEntry">💾 記錄今次(之後補餐後血糖)</button>
-      <div class="saved" id="savedMsg">已記低 ✓ 去「記錄」頁補餐後血糖</div>
-    </div>
-
+    <!-- ① 而家血糖 -->
     <div class="card">
-      <p class="lbl"><span class="pill" style="background:var(--corr)">血</span>而家血糖(餐前)</p>
+      <p class="lbl"><span class="pill" style="background:var(--corr)">血</span>① 而家血糖(食飯前量)</p>
       <div class="bgctl"><button type="button" id="bgMinus" class="bgbtn">−</button><input type="number" id="bg" inputmode="decimal" step="0.1" value="9"><button type="button" id="bgPlus" class="bgbtn">＋</button></div>
+      <div style="text-align:center;margin-top:8px"><span id="bgStat" style="display:inline-block;font-size:.82rem;font-weight:800;padding:3px 12px;border-radius:999px">範圍內</span></div>
     </div>
 
+    <!-- ② 食邊餐 · 食咩 -->
     <div class="card">
-      <details id="setBox">
-        <summary>⚙ 個人比例(醫生提供,自動記住)</summary>
-        <p class="setlbl">實際打針要用醫生畀你嘅數。</p>
-        <div class="sl set"><div class="top"><span class="nm">ICR 碳水比</span><span class="val"><span id="icrV">10</span> g</span></div><input type="range" id="icr" min="3" max="25" step="0.5" value="10"></div>
-        <div class="sl set"><div class="top"><span class="nm">ISF 敏感度</span><span class="val"><span id="isfV">2.5</span></span></div><input type="range" id="isf" min="0.5" max="6" step="0.1" value="2.5"></div>
-        <div class="sl set"><div class="top"><span class="nm">校正目標血糖</span><span class="val"><span id="tgtV">6.0</span></span></div><input type="range" id="target" min="4" max="10" step="0.1" value="6"></div>
-        <div class="mb" style="margin-top:13px"><label>劑量進位</label><select id="round"><option value="1">1 度</option><option value="0.5" selected>0.5 度</option><option value="0.1">0.1 度</option></select></div>
-        <div class="mb" style="margin-top:12px"><label>固定餐前針(度)— 每餐可設</label><div class="frow2"><div><label style="font-weight:400;font-size:.74rem">早餐</label><input type="number" id="fdB" inputmode="decimal" step="0.5"></div><div><label style="font-weight:400;font-size:.74rem">午餐</label><input type="number" id="fdL" inputmode="decimal" step="0.5"></div><div><label style="font-weight:400;font-size:.74rem">晚餐</label><input type="number" id="fdD" inputmode="decimal" step="0.5"></div><div><label style="font-weight:400;font-size:.74rem">加餐</label><input type="number" id="fdS" inputmode="decimal" step="0.5"></div></div></div>
-        <div class="mb" style="margin-top:12px"><label>餐後提醒通知</label><button type="button" id="notifBtn" style="border:1px solid var(--line);background:#fff;color:var(--meal-d);font-family:inherit;font-weight:700;padding:9px 12px;border-radius:10px;cursor:pointer">🔔 開餐後提醒</button> <span id="notifState" style="font-size:.8rem;color:var(--soft);margin-left:6px">未開</span><div style="font-size:.72rem;color:var(--soft);margin-top:6px">開咗之後撳「記錄今次」會喺 2 鐘後彈通知(App 開住先最穩)。</div></div>
-      </details>
-    </div>
-
-    <div class="card">
-      <p class="lbl"><span class="pill">碳</span>食物 — 用磅量實重</p>
+      <p class="lbl"><span class="pill">食</span>② 食邊餐 · 食咩</p>
+      <div class="mealseg" id="mealSeg"></div>
+      <div class="dosebox" id="doseBox"></div>
       <div class="carbhead"><span class="big" id="carbBig">0</span><span class="u">g 碳水</span><button class="clr" id="clr">清除</button></div>
       <div id="mealsBar" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div>
       <div class="picked" id="picked"></div>
@@ -214,7 +203,39 @@
       <div class="other"><input id="otherCarb" type="number" inputmode="decimal" placeholder="其他:直接入碳水克數"><button id="otherAdd">加</button></div>
     </div>
 
-    <p class="note">⚠ 教學示意,唔係打針指示。「2hr 預計」係粗略估算,實際會因食物種類/運動而異 — 所以要靠記錄調整。血糖偏低時唔好照計校正針。</p>
+    <!-- ③ 打幾多針 + 2 鐘後預計 -->
+    <div class="card hero">
+      <div class="hline"><span id="hMeal">早餐</span> 打 <span class="hd" id="hDose">3</span> 度針</div>
+      <div class="hsub">食咗 <span class="hc" id="hCarb">0</span>g 碳水 · 目標 2 鐘後 6–10</div>
+      <div class="whitepanel">
+        <div class="predbar">
+          <div class="pbtrack"><div class="pblow"></div></div>
+          <div class="pbband"><b>6–10</b></div>
+          <div class="pbline" id="pbline"></div>
+          <div class="pin now" id="pinNow"><div class="dot"></div><div class="pill" id="nowPill">而家 9.0</div></div>
+          <div class="pin pred" id="pinPred"><div class="dot" id="predDot"></div><div class="pill" id="predPill">2hr 7.0</div></div>
+        </div>
+        <div class="predict" id="predict"></div>
+        <div class="brk" id="refBox"></div>
+      </div>
+      <button class="savebtn" id="saveEntry">💾 記錄今次</button>
+      <div class="saved" id="savedMsg">已記低 ✓ 去「記錄」頁補餐後血糖</div>
+    </div>
+
+    <!-- ④ 個人比例(收起) -->
+    <div class="card">
+      <details id="setBox">
+        <summary>⚙ 個人比例(醫生提供,自動記住)</summary>
+        <p class="setlbl">實際打針要用醫生畀你嘅數。</p>
+        <div class="sl set"><div class="top"><span class="nm">ICR 碳水比</span><span class="val"><span id="icrV">10</span> g</span></div><input type="range" id="icr" min="3" max="25" step="0.5" value="10"></div>
+        <div class="sl set"><div class="top"><span class="nm">ISF 敏感度</span><span class="val"><span id="isfV">2.5</span></span></div><input type="range" id="isf" min="0.5" max="6" step="0.1" value="2.5"></div>
+        <div class="sl set"><div class="top"><span class="nm">校正目標血糖</span><span class="val"><span id="tgtV">6.0</span></span></div><input type="range" id="target" min="4" max="10" step="0.1" value="6"></div>
+        <div class="mb" style="margin-top:13px"><label>劑量進位</label><select id="round"><option value="1">1 度</option><option value="0.5" selected>0.5 度</option><option value="0.1">0.1 度</option></select></div>
+        <div class="mb" style="margin-top:12px"><label>餐後提醒通知</label><button type="button" id="notifBtn" style="border:1px solid var(--line);background:#fff;color:var(--meal-d);font-family:inherit;font-weight:700;padding:9px 12px;border-radius:10px;cursor:pointer">🔔 開餐後提醒</button> <span id="notifState" style="font-size:.8rem;color:var(--soft);margin-left:6px">未開</span><div style="font-size:.72rem;color:var(--soft);margin-top:6px">開咗之後撳「記錄今次」會喺 2 鐘後彈通知(App 開住先最穩)。</div></div>
+      </details>
+    </div>
+
+    <p class="note">⚠ 教學示意,唔係打針指示。「2 鐘預計」係粗略估算,實際因食物/運動而異,要靠記錄調整。血糖偏低時唔好照計校正針。</p>
   </div>
 
   <!-- ===== LOG ===== -->
@@ -309,12 +330,21 @@
   function renderMealSeg(){var seg=document.getElementById("mealSeg");if(!seg)return;
     seg.style.cssText="display:flex;gap:6px;margin-bottom:10px";seg.innerHTML="";
     Object.keys(MEALS).forEach(function(k){var b=document.createElement("button");b.type="button";
-      b.style.cssText="flex:1;border:1px solid rgba(255,255,255,.55);background:"+(k===curMeal?"#fff":"transparent")+";color:"+(k===curMeal?"#0a5860":"#fff")+";font-family:inherit;font-weight:700;font-size:.85rem;padding:8px 4px;border-radius:9px;cursor:pointer";
-      b.textContent=MEALS[k];b.onclick=function(){curMeal=k;renderMealSeg();draw();};seg.appendChild(b);});}
-  function fdInputs(){["B","L","D","S"].forEach(function(S){var key=S.toLowerCase();var el=document.getElementById("fd"+S);if(!el)return;
-    el.value=settings.fixed[key];
-    el.addEventListener("input",function(){var val=parseFloat(this.value);if(isNaN(val)||val<0)val=0;settings.fixed[key]=val;saveSettings();draw();});});}
-  fdInputs();renderMealSeg();
+      b.style.cssText="flex:1;border:1px solid "+(k===curMeal?"var(--meal)":"var(--line)")+";background:"+(k===curMeal?"var(--meal)":"#fff")+";color:"+(k===curMeal?"#fff":"var(--soft)")+";font-family:inherit;font-weight:700;font-size:.9rem;padding:10px 4px;border-radius:10px;cursor:pointer";
+      b.textContent=MEALS[k];b.onclick=function(){curMeal=k;renderMealSeg();renderDose();draw();};seg.appendChild(b);});}
+  function renderDose(){
+    var box=document.getElementById("doseBox");if(!box)return;
+    var d=(settings.fixed&&settings.fixed[curMeal]!=null)?settings.fixed[curMeal]:0;
+    box.innerHTML='<span class="dlbl">'+MEALS[curMeal]+' 餐前固定針</span>'+
+      '<button class="dstp" id="doseMinus">−</button>'+
+      '<button class="damt" id="doseVal">'+f2(d)+' 度</button>'+
+      '<button class="dstp" id="dosePlus">＋</button>';
+    function set(nv){if(nv<0)nv=0;settings.fixed[curMeal]=nv;saveSettings();renderDose();draw();}
+    document.getElementById("doseMinus").onclick=function(){set(Math.round((d-0.5)*2)/2);};
+    document.getElementById("dosePlus").onclick=function(){set(Math.round((d+0.5)*2)/2);};
+    document.getElementById("doseVal").onclick=function(){var t=prompt(MEALS[curMeal]+" 餐前打幾多度?",d);if(t===null)return;var nv=parseFloat(t);if(isNaN(nv)||nv<0)return;set(nv);};
+  }
+  renderMealSeg();renderDose();
 
   var wt={}, extra=0;
   function v(id){return parseFloat(document.getElementById(id).value);}
@@ -334,50 +364,47 @@
     document.getElementById("icrV").textContent=icr;document.getElementById("isfV").textContent=f1(isf);document.getElementById("tgtV").textContent=f1(tgt);
     document.getElementById("carbBig").textContent=carbs;
 
-    var dose=(settings.fixed&&settings.fixed[curMeal]!=null)?settings.fixed[curMeal]:0;  // 要打 = 固定餐前針
+    var st=document.getElementById("bgStat");
+    if(bg<4){st.textContent="偏低 ⚠";st.style.background="#fbeae9";st.style.color="#a8201a";}
+    else if(bg<=10){st.textContent="範圍內";st.style.background="#e3f4ec";st.style.color="#117a4e";}
+    else{st.textContent="偏高";st.style.background="#fdf3da";st.style.color="#9a6700";}
+
+    var dose=(settings.fixed&&settings.fixed[curMeal]!=null)?settings.fixed[curMeal]:0;
     var hasRatio=(icr>0&&isf>0);
     document.getElementById("hMeal").textContent=MEALS[curMeal];
     document.getElementById("hDose").textContent=f2(dose);
     document.getElementById("hCarb").textContent=carbs;
 
-    var b6=pos(6),b10=pos(10);
-    var band=document.getElementById("band");band.style.left=b6+"%";band.style.width=(b10-b6)+"%";
-    document.getElementById("bandlbl").style.left=((b6+b10)/2)+"%";
-    document.getElementById("mkNow").style.left=pos(bg)+"%";
-    document.getElementById("mvNow").textContent=f1(bg);
-
     var predicted=null,carbSuggest=null,carbRise=0;
-    if(hasRatio){ carbRise=(carbs/icr)*isf; predicted=bg+carbRise-dose*isf; carbSuggest=Math.max(rnd((carbs/icr)+(bg-tgt)/isf,step),0); }
+    if(hasRatio){carbRise=(carbs/icr)*isf;predicted=bg+carbRise-dose*isf;carbSuggest=Math.max(rnd((carbs/icr)+(bg-tgt)/isf,step),0);}
 
-    var mkPred=document.getElementById("mkPred");
+    var now=Math.max(SMIN,Math.min(SMAX,bg));
+    document.getElementById("pinNow").style.left=pos(now)+"%";
+    document.getElementById("nowPill").textContent="而家 "+f1(bg);
+    var pinPred=document.getElementById("pinPred"),pbline=document.getElementById("pbline");
     if(predicted!=null){
-      mkPred.style.display="block";
-      var pclamp=Math.max(SMIN,Math.min(SMAX,predicted));
-      mkPred.style.left=pos(pclamp)+"%";
-      document.getElementById("mvPred").textContent=(predicted>SMAX?">18":(predicted<SMIN?"<3":f1(predicted)));
-      var col,zone;
-      if(predicted<4){col="#ff8a82";zone="偏低 ⚠ 有低血糖風險";}
-      else if(predicted<6){col="#ffd27a";zone="略低過 6";}
-      else if(predicted<=10){col="#9be3bd";zone="達標 ✓ 6–10";}
-      else{col="#ffd27a";zone="偏高,超過 10";}
-      document.getElementById("dotPred").style.background=col;
-      document.getElementById("predict").innerHTML="打 "+f2(dose)+" 度,預計 2 鐘後 ≈ <b>"+f1(predicted)+"</b> 度 — "+zone+"<br><small>唔打針會升到約 "+f1(bg+carbRise)+" 度。實際因食物/運動而異。</small>";
+      pinPred.style.display="block";
+      var pc=Math.max(SMIN,Math.min(SMAX,predicted));
+      pinPred.style.left=pos(pc)+"%";
+      document.getElementById("predPill").textContent="2hr "+(predicted>SMAX?">18":(predicted<SMIN?"<3":f1(predicted)));
+      var zc=predicted<4?"#a8201a":(predicted<6?"#b06d10":(predicted<=10?"#117a4e":"#b06d10"));
+      document.getElementById("predDot").style.background=zc;
+      document.getElementById("predPill").style.color=zc;
+      var a=pos(now),b=pos(pc),lo=Math.min(a,b),hi=Math.max(a,b);
+      pbline.style.display="block";pbline.style.left=lo+"%";pbline.style.width=(hi-lo)+"%";
+      var zone=predicted<4?"偏低 ⚠ 有低血糖風險":(predicted<6?"略低過 6":(predicted<=10?"達標 ✓ 6–10":"偏高,超過 10"));
+      document.getElementById("predict").innerHTML="預計 2 鐘後 ≈ <b style=\"color:"+zc+"\">"+f1(predicted)+"</b> 度 — "+zone+"<br><small>唔打針會升到約 "+f1(bg+carbRise)+" 度。</small>";
     }else{
-      mkPred.style.display="none";
-      document.getElementById("predict").innerHTML="目標:2 鐘後血糖 6–10 度。<br><small>記低餐後血糖,睇下固定針 "+f2(dose)+" 度啱唔啱,再同醫生調。</small>";
+      pinPred.style.display="none";pbline.style.display="none";
+      document.getElementById("predict").innerHTML="<small>填咗 ICR / ISF 先會預計 2 鐘後血糖。而家照打固定針 "+f2(dose)+" 度,記低餐後血糖去調。</small>";
     }
 
-    var ref='<div class="r"><span>今餐固定針('+MEALS[curMeal]+')</span><b>'+f2(dose)+' 度</b></div>';
-    if(hasRatio){
-      ref+='<div class="r"><span>碳水計法參考(碳水+校正)</span><b>'+f2(carbSuggest)+' 度</b></div>';
+    var ref='';
+    if(hasRatio){ref='<div class="r"><span>碳水計法參考</span><b>'+f2(carbSuggest)+' 度</b></div>';
       var diff=carbSuggest-dose;
-      if(Math.abs(diff)>=0.5) ref+='<div class="r"><span style="opacity:.85;font-size:.78rem">'+(diff>0?('比固定針多 '+f2(diff)+' 度 → 固定針可能偏低'):('比固定針少 '+f2(-diff)+' 度 → 固定針可能偏高'))+'</span><b></b></div>';
-    }
+      if(Math.abs(diff)>=0.5)ref+='<div class="r"><span style="opacity:.85;font-size:.78rem">'+(diff>0?('比固定針多 '+f2(diff)+' 度 → 可能偏低'):('比固定針少 '+f2(-diff)+' 度 → 可能偏高'))+'</span><b></b></div>';}
     document.getElementById("refBox").innerHTML=ref;
 
-    document.getElementById("mCarb").textContent=carbs;
-    document.getElementById("mDose").textContent=f2(dose);
-    document.getElementById("mPred").textContent=(predicted!=null?f1(predicted):"–");
     draw._dose=dose;draw._carbs=carbs;draw._bg=bg;draw._pred=predicted;draw._meal=MEALS[curMeal];draw._suggest=carbSuggest;
   }
   document.getElementById("bg").addEventListener("input",draw);
